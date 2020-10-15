@@ -7,9 +7,12 @@ on:
   pull_request:
     branches: [ main, develop]
 
-jobs: 
+jobs:
   code_quality_control:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 12.x ]
     steps:
       - name: npm install, format, linting, unit test
         run: |

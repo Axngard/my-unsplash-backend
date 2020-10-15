@@ -1,9 +1,9 @@
 {
-  "name": "my",
+  "name": "Unsplash Challenge Cutting Edge Coders",
   "version": "0.0.1",
-  "description": "",
-  "author": "",
-  "private": true,
+  "description": "Solution for a challenge from Devchallenges.io. ",
+  "author": "Axel Espinosa",
+  "private": false,
   "license": "MIT",
   "scripts": {
     "prebuild": "rimraf dist",
