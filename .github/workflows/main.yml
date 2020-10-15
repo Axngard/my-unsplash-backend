@@ -1,5 +1,5 @@
 # WorkFlow to assure quality in the codebase
-name: Unsplash Pipeline
+name: Tests
 
 on:
   push:
