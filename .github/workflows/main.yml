@@ -14,9 +14,10 @@ jobs:
       matrix:
         node-version: [ 12.x ]
     steps:
+      - uses: actions/checkout@v2
       - name: npm install, format, linting, unit test
-        run: |
-          npm install
-          npm run format
-          npm run lint
-          npm run test
+        uses: actions/setup-node@v1
+      - run: npm install
+      - run: npm run format
+      - run: npm run lint
+      - run: npm run test
