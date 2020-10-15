@@ -5,6 +5,8 @@
 <div align="center">
    Solution for a challenge from  <a href="http://devchallenges.io" target="_blank">Devchallenges.io</a>.
 </div>
+![Tests](https://github.com/CuttingEdgeCoders/my-unsplash-backend/workflows/Tests/badge.svg)
+
 
 ## Installation
 
