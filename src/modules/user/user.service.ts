@@ -6,7 +6,6 @@ import { UserInterface } from './interfaces/user';
 import { UserResponseCreateDto } from './dtos/response-create.dto';
 import { plainToClass } from 'class-transformer';
 import bcrypt = require('bcrypt');
-import {throwError} from "rxjs";
 
 @Injectable()
 export class UserService {
@@ -51,7 +50,7 @@ export class UserService {
       }
     }
 
-    throw new BadRequestException('weak_password')
+    throw new BadRequestException('weak_password');
   }
 
   private static testPassword(password: string): boolean {

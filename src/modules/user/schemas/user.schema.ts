@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import {Document} from "mongoose";
+import { Document } from 'mongoose';
 
 export type UserDocument = User & Document;
 
@@ -12,7 +12,7 @@ export class User {
   username: string;
 
   @Prop({ minlength: 8, required: true })
-  password: string
+  password: string;
 
   @Prop({ required: true })
   email: string;
@@ -21,7 +21,7 @@ export class User {
   totalTimeSpent: number;
 
   @Prop({ type: Date, default: Date.now })
-  createdAt: Date
+  createdAt: Date;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

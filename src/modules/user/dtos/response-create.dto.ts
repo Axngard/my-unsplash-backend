@@ -1,4 +1,4 @@
 export class UserResponseCreateDto {
-    statusCode: number
-    message: string
+  statusCode: number;
+  message: string;
 }
