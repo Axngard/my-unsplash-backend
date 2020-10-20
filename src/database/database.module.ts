@@ -17,7 +17,8 @@ import { ConfigurationConstants } from '../config/configuration-constants';
         )}/${configService.get(
           ConfigurationConstants.DB_NAME,
         )}?retryWrites=true&w=majority`;
-        return { uri, useNewUrlParser: true };
+
+        return { uri, useNewUrlParser: true, useCreateIndex: true };
       },
       inject: [ConfigService],
     }),
