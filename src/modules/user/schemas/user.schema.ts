@@ -21,7 +21,7 @@ export class User {
   totalTimeSpent: number;
 
   @Prop({ type: Date, default: Date.now })
-  createdAt: Date;
+  createdAt: Date
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
