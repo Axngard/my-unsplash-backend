@@ -1,4 +1,8 @@
-import {BadRequestException, ConflictException, Injectable} from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
@@ -62,6 +66,6 @@ export class UserService {
   }
 
   async findOne(username: string): Promise<User> {
-    return this.userModel.findOne({ username })
+    return this.userModel.findOne({ username });
   }
 }

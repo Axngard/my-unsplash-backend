@@ -4,5 +4,5 @@ export enum ConfigurationConstants {
   DB_USERNAME = 'database.user',
   DB_PASSWORD = 'database.password',
   DB_NAME = 'database.name',
-  JWT_SECRET = 'jwt.secret'
+  JWT_SECRET = 'jwt.secret',
 }

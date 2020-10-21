@@ -6,7 +6,7 @@ import {
   ApiConflictResponse,
   ApiOperation,
   ApiResponse,
-  ApiTags
+  ApiTags,
 } from '@nestjs/swagger';
 import { InformativeResponseDto } from '../../dtos/informative-response.dto';
 
@@ -22,8 +22,10 @@ export class UserController {
     description: 'Create a user',
     type: InformativeResponseDto,
   })
-  @ApiConflictResponse({ description: 'A user with the same username already exists' })
-  @ApiBadRequestResponse({ description: 'Weak password'})
+  @ApiConflictResponse({
+    description: 'A user with the same username already exists',
+  })
+  @ApiBadRequestResponse({ description: 'Weak password' })
   signUp(@Body() userData: CreateUserDto) {
     return this.userService.create(userData);
   }
