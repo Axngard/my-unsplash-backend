@@ -6,4 +6,7 @@ export default () => ({
     password: process.env.MONGO_PASSWORD,
     name: process.env.MONGO_DB_NAME,
   },
+  jwt: {
+    secret: process.env.JWT_SECRET,
+  },
 });

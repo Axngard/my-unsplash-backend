@@ -1,9 +1,13 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ConflictException,
+  Injectable,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User, UserDocument } from './schemas/user.schema';
 import { Model } from 'mongoose';
 import { UserInterface } from './interfaces/user';
-import { UserResponseCreateDto } from './dtos/response-create.dto';
+import { InformativeResponseDto } from '../../dtos/informative-response.dto';
 import { plainToClass } from 'class-transformer';
 import bcrypt = require('bcrypt');
 
@@ -13,13 +17,13 @@ export class UserService {
 
   constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-  async create(userData: UserInterface): Promise<UserResponseCreateDto> {
+  async create(userData: UserInterface): Promise<InformativeResponseDto> {
     const searchUsers = await this.userModel.findOne({
       username: userData.username,
     });
 
     if (searchUsers) {
-      throw new BadRequestException('user_duplicated');
+      throw new ConflictException('user_duplicated');
     }
 
     const passwordTest = UserService.testPassword(userData.password);
@@ -42,7 +46,7 @@ export class UserService {
         const userSaved = await userToCreate.save();
 
         if (userSaved) {
-          return plainToClass(UserResponseCreateDto, {
+          return plainToClass(InformativeResponseDto, {
             status: 201,
             message: 'user_created',
           });
@@ -59,5 +63,9 @@ export class UserService {
       'ig',
     );
     return !!regexPassword.test(password);
+  }
+
+  async findOne(username: string): Promise<User> {
+    return this.userModel.findOne({ username });
   }
 }
