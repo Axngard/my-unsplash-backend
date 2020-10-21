@@ -60,4 +60,8 @@ export class UserService {
     );
     return !!regexPassword.test(password);
   }
+
+  async findOne(username: string): Promise<User> {
+    return this.userModel.findOne({ username })
+  }
 }
