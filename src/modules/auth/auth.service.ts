@@ -21,6 +21,7 @@ export class AuthService {
       if (matchPassword) {
         return user
       }
+      throw new UnauthorizedException('verify_credentials')
     }
 
     throw new UnauthorizedException('verify_credentials')
@@ -28,10 +29,13 @@ export class AuthService {
 
   async signIn(userData: SignIn): Promise<SignInResponseDto> {
     const validUser = await this.validateUser(userData)
-    const payload = { userId: validUser._id, username: validUser.username }
-    return plainToClass(SignInResponseDto, {
-      accessToken: this.jwtService.sign(payload),
-      ...payload,
-    })
+    if (validUser) {
+      const payload = { userId: validUser._id, username: validUser.username }
+      return plainToClass(SignInResponseDto, {
+        accessToken: this.jwtService.sign(payload),
+        ...payload,
+      })
+    }
+    throw new UnauthorizedException('verify_credentials')
   }
 }

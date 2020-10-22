@@ -25,7 +25,8 @@ export class UserController {
   @ApiConflictResponse({
     description: 'A user with the same username already exists',
   })
-  @ApiBadRequestResponse({ description: 'Weak password' })
+  @ApiBadRequestResponse({ description: 'Weak password, password must contain a special' +
+        ' character, capital letter and a number, with a minimum length of 8 characters' })
   signUp(@Body() userData: CreateUserDto) {
     return this.userService.create(userData)
   }
