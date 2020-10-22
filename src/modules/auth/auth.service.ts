@@ -4,7 +4,7 @@ import { SignIn } from './interfaces/signin'
 import { JwtService } from '@nestjs/jwt'
 import { SignInResponseDto } from './dtos/sign-in-response.dto'
 import { plainToClass } from 'class-transformer'
-import bcrypt = require('bcrypt')
+import * as bcrypt from 'bcrypt'
 
 @Injectable()
 export class AuthService {
@@ -17,8 +17,11 @@ export class AuthService {
     const user = await this.userService.findOne(userData.username)
 
     if (user) {
-      const matchPassword = bcrypt.compare(userData.password, user.password)
-      if (matchPassword) {
+      const matchedPassword = await bcrypt.compare(
+        userData.password,
+        user.password,
+      )
+      if (matchedPassword) {
         return user
       }
       throw new UnauthorizedException('verify_credentials')
