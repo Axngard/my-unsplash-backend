@@ -1,14 +1,14 @@
-import { Body, Controller, Post } from '@nestjs/common';
-import { CreateUserDto } from './dtos/create-user.dto';
-import { UserService } from './user.service';
+import { Body, Controller, Post } from '@nestjs/common'
+import { CreateUserDto } from './dtos/create-user.dto'
+import { UserService } from './user.service'
 import {
   ApiBadRequestResponse,
   ApiConflictResponse,
   ApiOperation,
   ApiResponse,
   ApiTags,
-} from '@nestjs/swagger';
-import { InformativeResponseDto } from '../../dtos/informative-response.dto';
+} from '@nestjs/swagger'
+import { InformativeResponseDto } from '../../dtos/informative-response.dto'
 
 @Controller('user')
 @ApiTags('Users')
@@ -27,6 +27,6 @@ export class UserController {
   })
   @ApiBadRequestResponse({ description: 'Weak password' })
   signUp(@Body() userData: CreateUserDto) {
-    return this.userService.create(userData);
+    return this.userService.create(userData)
   }
 }

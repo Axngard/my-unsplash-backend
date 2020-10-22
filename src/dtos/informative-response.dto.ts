@@ -1,12 +1,13 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty } from '@nestjs/swagger'
 
 export class InformativeResponseDto {
   @ApiProperty({
     example: 201,
   })
-  statusCode: number;
+  statusCode: number
+
   @ApiProperty({
     example: 'user_created',
   })
-  message: string;
+  message: string
 }
