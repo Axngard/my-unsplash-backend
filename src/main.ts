@@ -28,9 +28,14 @@ async function bootstrap() {
   SwaggerModule.setup('api', app, document)
 
   // CORS security
-  app.enableCors()
+  app.enableCors({
+    origin: '*',
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
+  })
 
   // Wired a port to the app
   await app.listen(PORT)
 }
+
 bootstrap()
