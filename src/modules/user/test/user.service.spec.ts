@@ -1,16 +1,24 @@
 import { Test, TestingModule } from '@nestjs/testing'
 import { UserService } from '../user.service'
-import {User, UserDocument, UserSchema} from '../schemas/user.schema'
+import { User, UserDocument } from '../schemas/user.schema'
 import { getModelToken } from '@nestjs/mongoose'
 import { MockUserModel } from './mocks/MockUserModel'
 import { UserInterface } from '../interfaces/user'
-import { ConflictException } from '@nestjs/common'
+import {BadRequestException, ConflictException} from '@nestjs/common'
 import { Model } from 'mongoose'
+import exp from "constants";
 
 const correctSignUpData: UserInterface = {
   fullName: 'Axel Espinosa',
   username: 'axelespinosadev',
   password: 'Assseeef6a7!',
+  email: 'test@test.com',
+}
+
+const incorrectSignUpData: UserInterface = {
+  fullName: 'Axel Espinosa',
+  username: 'axelespinosadev2',
+  password: 'As6a!',
   email: 'test@test.com',
 }
 
@@ -40,6 +48,7 @@ describe('UserService Tests', () => {
 
     service = module.get<UserService>(UserService)
     userModel = module.get(getModelToken(User.name))
+    jest.restoreAllMocks()
   })
 
   it('should be defined', () => {
@@ -50,7 +59,7 @@ describe('UserService Tests', () => {
     it('should find a duplicated user', async () => {
       const userModelFindOneSpy = jest
         .spyOn(userModel, 'findOne')
-        .mockResolvedValue(User.bind(userStoredInDb))
+        .mockResolvedValue(Object.create(userStoredInDb))
 
       try {
         await service.create(correctSignUpData)
@@ -59,6 +68,23 @@ describe('UserService Tests', () => {
         expect(err.message).toBe('user_duplicated')
         expect(userModelFindOneSpy).toBeCalledWith({
           username: correctSignUpData.username,
+        })
+      }
+    })
+
+    it('should not allow the password', async () => {
+      const userModelFindOneSpy = jest
+          .spyOn(userModel, 'findOne')
+          .mockResolvedValue(null)
+
+      try {
+        await service.create(incorrectSignUpData)
+      } catch (err) {
+        expect(err).toBeInstanceOf(BadRequestException)
+        expect(err.message).toBe('weak_password')
+        expect(userModelFindOneSpy).toHaveBeenCalled()
+        expect(userModelFindOneSpy).toBeCalledWith({
+          username: incorrectSignUpData.username,
         })
       }
     })
