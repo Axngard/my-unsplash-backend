@@ -7,8 +7,6 @@ import { UserInterface } from '../interfaces/user'
 import { BadRequestException, ConflictException } from '@nestjs/common'
 import { Model } from 'mongoose'
 import { InformativeResponseDto } from '../../../dtos/informative-response.dto'
-import { plainToClass } from 'class-transformer'
-import exp from "constants";
 
 const correctSignUpData: UserInterface = {
   fullName: 'Axel Espinosa',

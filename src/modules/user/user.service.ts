@@ -1,7 +1,8 @@
 import {
   BadRequestException,
   ConflictException,
-  Injectable, InternalServerErrorException,
+  Injectable,
+  InternalServerErrorException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { User, UserDocument } from './schemas/user.schema'
@@ -42,7 +43,9 @@ export class UserService {
           email: userData.email,
         }
 
-        const userToCreate = await this.UserModel.create(plainToClass(User, user))
+        const userToCreate = await this.UserModel.create(
+          plainToClass(User, user),
+        )
 
         if (userToCreate) {
           return plainToClass(InformativeResponseDto, {
