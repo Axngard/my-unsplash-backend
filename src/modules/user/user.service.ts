@@ -1,7 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
-  Injectable,
+  Injectable, InternalServerErrorException,
 } from '@nestjs/common'
 import { InjectModel } from '@nestjs/mongoose'
 import { User, UserDocument } from './schemas/user.schema'
@@ -42,16 +42,16 @@ export class UserService {
           email: userData.email,
         }
 
-        const UserToCreate = new this.UserModel(user)
-        const userSaved = await UserToCreate.save()
+        const userToCreate = await this.UserModel.create(plainToClass(User, user))
 
-        if (userSaved) {
+        if (userToCreate) {
           return plainToClass(InformativeResponseDto, {
-            status: 201,
+            statusCode: 201,
             message: 'user_created',
           })
         }
       }
+      throw new InternalServerErrorException()
     }
 
     throw new BadRequestException('weak_password')

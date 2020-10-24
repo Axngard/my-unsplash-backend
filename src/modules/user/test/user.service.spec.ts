@@ -4,8 +4,10 @@ import { User, UserDocument } from '../schemas/user.schema'
 import { getModelToken } from '@nestjs/mongoose'
 import { MockUserModel } from './mocks/MockUserModel'
 import { UserInterface } from '../interfaces/user'
-import {BadRequestException, ConflictException} from '@nestjs/common'
+import { BadRequestException, ConflictException } from '@nestjs/common'
 import { Model } from 'mongoose'
+import { InformativeResponseDto } from '../../../dtos/informative-response.dto'
+import { plainToClass } from 'class-transformer'
 import exp from "constants";
 
 const correctSignUpData: UserInterface = {
@@ -74,8 +76,8 @@ describe('UserService Tests', () => {
 
     it('should not allow the password', async () => {
       const userModelFindOneSpy = jest
-          .spyOn(userModel, 'findOne')
-          .mockResolvedValue(null)
+        .spyOn(userModel, 'findOne')
+        .mockResolvedValue(null)
 
       try {
         await service.create(incorrectSignUpData)
@@ -87,6 +89,31 @@ describe('UserService Tests', () => {
           username: incorrectSignUpData.username,
         })
       }
+    })
+
+    it('should create the user', async () => {
+      const userModelFindOneSpy = jest
+        .spyOn(userModel, 'findOne')
+        .mockResolvedValue(null)
+
+      const userModelCreateSpy = jest
+        .spyOn(userModel, 'create')
+        .mockResolvedValue(Object.create(userStoredInDb))
+
+      const response: InformativeResponseDto = {
+        statusCode: 201,
+        message: 'user_created',
+      }
+
+      const create = await service.create(correctSignUpData)
+
+      expect(userModelFindOneSpy).toBeCalledWith({
+        username: correctSignUpData.username,
+      })
+      expect(userModelCreateSpy).toBeCalled()
+      expect(create).toBeInstanceOf(InformativeResponseDto)
+      expect(create.message).toBe(response.message)
+      expect(create.statusCode).toBe(response.statusCode)
     })
   })
 })
