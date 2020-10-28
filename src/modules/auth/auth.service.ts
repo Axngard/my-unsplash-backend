@@ -36,6 +36,7 @@ export class AuthService {
     return plainToClass(SignInResponseDto, {
       accessToken: this.jwtService.sign(payload),
       ...payload,
+      email: validUser.email,
     })
   }
 }

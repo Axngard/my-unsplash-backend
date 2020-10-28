@@ -13,8 +13,8 @@ import { InformativeResponseDto } from '../../dtos/informative-response.dto'
 @Controller('user')
 @ApiTags('Users')
 export class UserController {
-  constructor(private userService: UserService) {}  
-  
+  constructor(private userService: UserService) {}
+
   @Post()
   @ApiOperation({ summary: 'Create user' })
   @ApiResponse({
