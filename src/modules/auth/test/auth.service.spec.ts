@@ -16,14 +16,19 @@ const userStoredInDb = {
   createdAt: new Date(),
 }
 
-const signInUserInformation: SignInDto = {
+const correctSignInInformation: SignInDto = {
   username: 'axelespinosadev',
   password: 'AxelDavid45!',
 }
 
-const wrongSignInUserInformation: SignInDto = {
+const wrongUsernameSignInInformation: SignInDto = {
   username: 'axelespinosadez',
   password: 'AxelDavid45!',
+}
+
+const wrongPasswordSignInInformation: SignInDto = {
+  username: 'axelespinosadev',
+  password: 'AxelDavid45',
 }
 
 describe('AuthService', () => {
@@ -61,10 +66,10 @@ describe('AuthService', () => {
         .spyOn(userService, 'findOne')
         .mockResolvedValue(userStoredInDb)
 
-      const validate = await service.validateUser(signInUserInformation)
+      const validate = await service.validateUser(correctSignInInformation)
 
       expect(userServiceFindOne).toHaveBeenCalledWith(
-        signInUserInformation.username,
+        correctSignInInformation.username,
       )
 
       expect(validate).toBe(userStoredInDb)
@@ -76,16 +81,30 @@ describe('AuthService', () => {
         .mockResolvedValue(null)
 
       try {
-        await service.validateUser(wrongSignInUserInformation)
+        await service.validateUser(wrongUsernameSignInInformation)
       } catch (err) {
         expect(err).toBeInstanceOf(UnauthorizedException)
         expect(err.message).toBe('verify_credentials')
         expect(userServiceFindOneError).toHaveBeenCalledWith(
-          wrongSignInUserInformation.username,
+          wrongUsernameSignInInformation.username,
         )
       }
     })
 
-    it.skip('should find the user but incorrect password', () => {})
+    it('should find the user but incorrect password', async () => {
+      const userServiceFindOne = jest
+        .spyOn(userService, 'findOne')
+        .mockResolvedValue(userStoredInDb)
+
+      try {
+        await service.validateUser(wrongPasswordSignInInformation)
+      } catch (err) {
+        expect(err).toBeInstanceOf(UnauthorizedException)
+        expect(err.message).toBe('verify_credentials')
+        expect(userServiceFindOne).toHaveBeenCalledWith(
+          wrongPasswordSignInInformation.username,
+        )
+      }
+    })
   })
 })
