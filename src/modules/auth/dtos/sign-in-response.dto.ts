@@ -8,5 +8,8 @@ export class SignInResponseDto {
   username: string
 
   @ApiProperty()
+  email: string
+
+  @ApiProperty()
   accessToken: string
 }
