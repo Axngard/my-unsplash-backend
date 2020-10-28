@@ -32,13 +32,10 @@ export class AuthService {
 
   async signIn(userData: SignIn): Promise<SignInResponseDto> {
     const validUser = await this.validateUser(userData)
-    if (validUser) {
-      const payload = { userId: validUser._id, username: validUser.username }
-      return plainToClass(SignInResponseDto, {
-        accessToken: this.jwtService.sign(payload),
-        ...payload,
-      })
-    }
-    throw new UnauthorizedException('verify_credentials')
+    const payload = { userId: validUser._id, username: validUser.username }
+    return plainToClass(SignInResponseDto, {
+      accessToken: this.jwtService.sign(payload),
+      ...payload,
+    })
   }
 }

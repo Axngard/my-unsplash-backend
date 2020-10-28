@@ -13,8 +13,8 @@ import { InformativeResponseDto } from '../../dtos/informative-response.dto'
 @Controller('user')
 @ApiTags('Users')
 export class UserController {
-  constructor(private userService: UserService) {}
-
+  constructor(private userService: UserService) {}  
+  
   @Post()
   @ApiOperation({ summary: 'Create user' })
   @ApiResponse({
@@ -23,7 +23,7 @@ export class UserController {
     type: InformativeResponseDto,
   })
   @ApiConflictResponse({
-    description: 'A user with the same username already exists',
+    description: 'A user with the sam e username already exists',
   })
   @ApiBadRequestResponse({
     description:
