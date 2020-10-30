@@ -6,6 +6,6 @@ export class ImagesController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file) {
-    console.log(file)
+    console.log('saving:', file)
   }
 }
