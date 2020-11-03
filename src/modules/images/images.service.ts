@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { S3 } from 'ibm-cos-sdk'
-import { ConfigurationConstants } from 'src/config/configuration-constants'
+import { ConfigurationConstants } from '../../config/configuration-constants'
 @Injectable()
 export class ImagesService {
   constructor(private configService: ConfigService) {}
@@ -26,7 +26,7 @@ export class ImagesService {
             ConfigurationConstants.STORAGE_BUCKET_NAME,
           ),
           Key: `${Date.now()}_${image.originalname}`,
-          ContentType: image.mimetype
+          ContentType: image.mimetype,
           Body: 'testing',
         })
         .promise()
