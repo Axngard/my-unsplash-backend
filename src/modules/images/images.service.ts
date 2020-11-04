@@ -1,10 +1,11 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { S3 } from 'ibm-cos-sdk'
 import { ConfigurationConstants } from '../../config/configuration-constants'
 @Injectable()
 export class ImagesService {
   constructor(private configService: ConfigService) {}
+
   async store(image) {
     const config = {
       endpoint: this.configService.get(ConfigurationConstants.STORAGE_ENDPOINT),
@@ -18,21 +19,21 @@ export class ImagesService {
     }
     const bucket = new S3(config)
 
-    try {
-      console.log(image)
-      const stored = await bucket
-        .putObject({
-          Bucket: this.configService.get(
-            ConfigurationConstants.STORAGE_BUCKET_NAME,
-          ),
-          Key: `${Date.now()}_${image.originalname}`,
-          ContentType: image.mimetype,
-          Body: 'testing',
-        })
-        .promise()
+    const stored = await bucket
+      .putObject({
+        Bucket: this.configService.get(
+          ConfigurationConstants.STORAGE_BUCKET_NAME,
+        ),
+        Key: `${Date.now()}_${image.originalname}`,
+        ContentType: image.mimetype,
+        Body: image.buffer,
+      })
+      .promise()
+
+    if (stored) {
       console.log(stored)
-    } catch (err) {
-      console.log(err)
+    } else {
+      throw new InternalServerErrorException('image_not_saved')
     }
   }
 }
