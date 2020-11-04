@@ -1,12 +1,35 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { plainToClass } from 'class-transformer'
 import { S3 } from 'ibm-cos-sdk'
 import { ConfigurationConstants } from '../../config/configuration-constants'
+import { ImageInterface } from './interfaces/image'
+import { ImageResponse } from './dtos/image-response.dto'
+
 @Injectable()
 export class ImagesService {
-  constructor(private configService: ConfigService) {}
+  private Bucket: S3
 
-  async store(image) {
+  constructor(private configService: ConfigService) {
+    this.bootstrapBucket()
+  }
+
+  async store(image: ImageInterface): Promise<ImageResponse> {
+    const storedId = await this.sendToBucket(image)
+
+    if (storedId) {
+      const response = {
+        statusCode: 201,
+        message: 'image_created',
+        imageId: storedId,
+      }
+      return plainToClass(ImageResponse, response)
+    } else {
+      throw new InternalServerErrorException('image_not_saved')
+    }
+  }
+
+  private bootstrapBucket(): void {
     const config = {
       endpoint: this.configService.get(ConfigurationConstants.STORAGE_ENDPOINT),
       apiKeyId: this.configService.get(ConfigurationConstants.STORAGE_APIKEY),
@@ -17,23 +40,21 @@ export class ImagesService {
         ConfigurationConstants.STORAGE_INSTANCEID,
       ),
     }
-    const bucket = new S3(config)
+    this.Bucket = new S3(config)
+  }
 
-    const stored = await bucket
-      .putObject({
-        Bucket: this.configService.get(
-          ConfigurationConstants.STORAGE_BUCKET_NAME,
-        ),
-        Key: `${Date.now()}_${image.originalname}`,
-        ContentType: image.mimetype,
-        Body: image.buffer,
-      })
-      .promise()
+  private async sendToBucket(image: ImageInterface): Promise<string> {
+    const key = `${Date.now()}_${image.originalname}`
 
-    if (stored) {
-      console.log(stored)
-    } else {
-      throw new InternalServerErrorException('image_not_saved')
-    }
+    await this.Bucket.putObject({
+      Bucket: this.configService.get(
+        ConfigurationConstants.STORAGE_BUCKET_NAME,
+      ),
+      Key: key,
+      ContentType: image.mimetype,
+      Body: image.buffer,
+    }).promise()
+
+    return key
   }
 }

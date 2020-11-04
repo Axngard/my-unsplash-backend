@@ -9,6 +9,6 @@ export class ImagesController {
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
   uploadFile(@UploadedFile() file) {
-    this.imagesService.store(file)
+    return this.imagesService.store(file)
   }
 }
