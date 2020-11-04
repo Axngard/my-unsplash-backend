@@ -11,6 +11,7 @@ import { ConfigModule } from '@nestjs/config'
     MulterModule.register({
       storage: memoryStorage(),
       fileFilter: (req, file, cb) => {
+        console.log(req)
         const allowedTypes = ['image/jpg', 'image/jpeg', 'image/png']
         if (allowedTypes.includes(file.mimetype)) {
           cb(null, true)

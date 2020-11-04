@@ -1,10 +1,14 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common'
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { plainToClass } from 'class-transformer'
 import { S3 } from 'ibm-cos-sdk'
 import { ConfigurationConstants } from '../../config/configuration-constants'
-import { ImageInterface } from './interfaces/image'
 import { ImageResponse } from './dtos/image-response.dto'
+import { ImageInterface } from './interfaces/image'
 
 @Injectable()
 export class ImagesService {
@@ -14,7 +18,12 @@ export class ImagesService {
     this.bootstrapBucket()
   }
 
-  async store(image: ImageInterface): Promise<ImageResponse> {
+  async store(image): Promise<ImageResponse> {
+    console.log(image)
+    if (!image) {
+      throw new BadRequestException('file_missing')
+    }
+
     const storedId = await this.sendToBucket(image)
 
     if (storedId) {
@@ -44,6 +53,8 @@ export class ImagesService {
   }
 
   private async sendToBucket(image: ImageInterface): Promise<string> {
+    if (!image) throw new BadRequestException()
+
     const key = `${Date.now()}_${image.originalname}`
 
     await this.Bucket.putObject({
