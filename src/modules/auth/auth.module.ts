@@ -15,7 +15,7 @@ import { ConfigurationConstants } from '../../config/configuration-constants'
       imports: [ConfigModule],
       useFactory: async (configService: ConfigService) => ({
         secret: configService.get(ConfigurationConstants.JWT_SECRET),
-        signOptions: { expiresIn: '15m'}
+        signOptions: { expiresIn: '15m' },
       }),
       inject: [ConfigService],
     }),
