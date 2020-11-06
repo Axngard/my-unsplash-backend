@@ -4,9 +4,11 @@ import { MulterModule } from '@nestjs/platform-express'
 import { memoryStorage } from 'multer'
 import { ImagesService } from './images.service'
 import { ConfigModule } from '@nestjs/config'
-
+import { MongooseModule } from '@nestjs/mongoose'
+import { Images, ImagesSchema } from './schemas/images.schema'
 @Module({
   imports: [
+    MongooseModule.forFeature([{ name: Images.name, schema: ImagesSchema }]),
     ConfigModule,
     MulterModule.register({
       storage: memoryStorage(),
