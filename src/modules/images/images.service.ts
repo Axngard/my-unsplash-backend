@@ -4,6 +4,7 @@ import { plainToClass } from 'class-transformer'
 import { S3 } from 'ibm-cos-sdk'
 import { ConfigurationConstants } from '../../config/configuration-constants'
 import { ImageResponse } from './dtos/image-response.dto'
+import { ImageUploadDto } from './dtos/image-upload.dto'
 import { ImageInterface } from './interfaces/image'
 
 @Injectable()
@@ -14,9 +15,12 @@ export class ImagesService {
     this.bootstrapBucket()
   }
 
-  async store(image: ImageInterface): Promise<ImageResponse> {
+  async store(
+    image: ImageInterface,
+    metadata: ImageUploadDto,
+  ): Promise<ImageResponse> {
     const storedId = await this.sendToBucket(image)
-
+    console.log(metadata)
     if (storedId) {
       const response = {
         statusCode: 201,
