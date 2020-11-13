@@ -1,17 +1,22 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
+import { InjectModel } from '@nestjs/mongoose'
 import { plainToClass } from 'class-transformer'
 import { S3 } from 'ibm-cos-sdk'
 import { ConfigurationConstants } from '../../config/configuration-constants'
 import { ImageResponse } from './dtos/image-response.dto'
 import { ImageUploadDto } from './dtos/image-upload.dto'
 import { ImageInterface } from './interfaces/image'
+import { Images } from './schemas/images.schema'
 
 @Injectable()
 export class ImagesService {
   private Bucket: S3
 
-  constructor(private configService: ConfigService) {
+  constructor(
+    private configService: ConfigService,
+    @InjectModel(Images.name) private imagesModel: Images,
+  ) {
     this.bootstrapBucket()
   }
 
@@ -19,8 +24,8 @@ export class ImagesService {
     image: ImageInterface,
     metadata: ImageUploadDto,
   ): Promise<ImageResponse> {
-    const storedId = await this.sendToBucket(image)
     console.log(metadata)
+    const storedId = await this.sendToBucket(image)
     if (storedId) {
       const response = {
         statusCode: 201,
