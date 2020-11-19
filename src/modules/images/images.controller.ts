@@ -12,11 +12,22 @@ import { ImageInterceptor } from './interceptors/image.interceptor'
 import { ImagesService } from './images.service'
 import { ImageUploadDto } from './dtos/image-upload.dto'
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard'
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiConsumes,
+  ApiCreatedResponse,
+} from '@nestjs/swagger'
+import { ImageResponse } from './dtos/image-response.dto'
 
 @Controller('images')
 export class ImagesController {
   constructor(private imagesService: ImagesService) {}
 
+  @ApiBearerAuth()
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ type: ImageUploadDto })
+  @ApiCreatedResponse({ type: ImageResponse })
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'), ImageInterceptor)

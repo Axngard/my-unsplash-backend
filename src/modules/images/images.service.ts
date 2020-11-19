@@ -27,6 +27,7 @@ export class ImagesService {
     metadata: ImageUploadDto,
   ): Promise<ImageResponse> {
     const generatedName = `${Date.now()}_${image.originalname}`
+
     const databaseId = await this.imagesModel.create({
       repositoryKey: generatedName,
       labels: metadata.labels,
@@ -69,9 +70,6 @@ export class ImagesService {
     image: ImageInterface,
     key: string,
   ): Promise<string> {
-    if (!key) {
-      throw new InternalServerErrorException('bad_implementation')
-    }
     await this.Bucket.putObject({
       Bucket: this.configService.get(
         ConfigurationConstants.STORAGE_BUCKET_NAME,
