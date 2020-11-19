@@ -1,4 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose'
+import { Document } from 'mongoose'
 
 export type ImagesDocument = Images & Document
 
@@ -7,7 +8,7 @@ export class Images {
   @Prop({ required: true })
   repositoryKey: string
 
-  @Prop({ required: true })
+  @Prop({ required: true, type: [String] })
   labels: string[]
 
   @Prop({ required: true })

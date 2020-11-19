@@ -5,6 +5,7 @@ import {
   UploadedFile,
   Body,
   UseGuards,
+  Request,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ImageInterceptor } from './interceptors/image.interceptor'
@@ -19,7 +20,13 @@ export class ImagesController {
   @UseGuards(JwtAuthGuard)
   @Post()
   @UseInterceptors(FileInterceptor('image'), ImageInterceptor)
-  async uploadFile(@UploadedFile() image, @Body() metadata: ImageUploadDto) {
+  async uploadFile(
+    @UploadedFile() image,
+    @Body() metadata: ImageUploadDto,
+    @Request() req,
+  ) {
+    // Add information about the user
+    metadata.username = req.user.username
     return this.imagesService.store(image, metadata)
   }
 }
