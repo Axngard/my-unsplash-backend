@@ -22,6 +22,7 @@ async function bootstrap() {
     .setTitle('My Unsplash By  Cutting Edge Coders')
     .setDescription('Solution for a challenge from devchallenges.io.')
     .setVersion('1.0')
+    .addBearerAuth()
     .build()
 
   const document = SwaggerModule.createDocument(app, options)
