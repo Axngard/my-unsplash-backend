@@ -41,15 +41,14 @@ export class ImagesService {
     })
 
     if (databaseData && bucketData) {
-      this.logger(
-        `[${new Date()}] Image saved in DB with id: ${databaseData._id}`,
-      )
-      const response = {
+      this.logger(`[INFO] Image saved in DB with id: ${databaseData._id}`)
+      const response: ImageResponse = {
         statusCode: 201,
         message: 'image_created',
+        imageId: databaseData._id,
         imageUrl: databaseData.url,
       }
-      return plainToClass(ImageResponse, response)
+      return response
     }
 
     throw new InternalServerErrorException('image_not_saved')
@@ -88,9 +87,7 @@ export class ImagesService {
 
     const bucketInfo = await this.Bucket.upload(uploadOptions).promise()
     this.logger(
-      `[${new Date()}] New image in bucket: ${bucketInfo.Bucket} with url: ${
-        bucketInfo.Location
-      } `,
+      `[INFO] New image in bucket: ${bucketInfo.Bucket} with url: ${bucketInfo.Location} `,
     )
     return bucketInfo.Location
   }
