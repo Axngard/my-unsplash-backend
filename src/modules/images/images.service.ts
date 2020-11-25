@@ -1,7 +1,7 @@
+import debug from 'debug'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { InjectModel } from '@nestjs/mongoose'
-import { plainToClass } from 'class-transformer'
 import { S3 } from 'ibm-cos-sdk'
 import { Model } from 'mongoose'
 import { ConfigurationConstants } from '../../config/configuration-constants'
@@ -9,16 +9,19 @@ import { ImageResponse } from './dtos/image-response.dto'
 import { ImageUploadDto } from './dtos/image-upload.dto'
 import { ImageInterface } from './interfaces/image'
 import { Images, ImagesDocument } from './schemas/images.schema'
+import { ImagesListResponse } from './dtos/images-list-response.dto'
 
 @Injectable()
 export class ImagesService {
   private Bucket: S3
+  private logger: any
 
   constructor(
     private configService: ConfigService,
     @InjectModel(Images.name) private imagesModel: Model<ImagesDocument>,
   ) {
     this.bootstrapBucket()
+    this.logger = debug('app:images')
   }
 
   async store(
@@ -27,8 +30,9 @@ export class ImagesService {
   ): Promise<ImageResponse> {
     const generatedName = `${Date.now()}_${image.originalname}`
 
-    const databaseId = await this.imagesModel.create({
-      repositoryKey: generatedName,
+    const bucketData = await this.sendToBucket(image, generatedName)
+    const databaseData = await this.imagesModel.create({
+      url: bucketData,
       labels: metadata.labels,
       username: metadata.username,
       likes: 0,
@@ -36,19 +40,29 @@ export class ImagesService {
       createdAt: Date.now(),
     })
 
-    const bucketId = await this.sendToBucket(image, generatedName)
-
-    if (databaseId && bucketId) {
-      console.info(`New Image saved with id: ${databaseId.id}`)
-      const response = {
+    if (databaseData && bucketData) {
+      this.logger(`[INFO] Image saved in DB with id: ${databaseData._id}`)
+      const response: ImageResponse = {
         statusCode: 201,
         message: 'image_created',
-        imageId: databaseId.id,
+        imageId: databaseData._id,
+        imageUrl: databaseData.url,
       }
-      return plainToClass(ImageResponse, response)
+      return response
     }
 
     throw new InternalServerErrorException('image_not_saved')
+  }
+
+  async list(): Promise<ImagesListResponse> {
+    const data = await this.imagesModel.find({})
+    const response: ImagesListResponse = {
+      statusCode: 200,
+      message: 'images_list',
+      data: data,
+    }
+
+    return response
   }
 
   private bootstrapBucket(): void {
@@ -69,15 +83,19 @@ export class ImagesService {
     image: ImageInterface,
     key: string,
   ): Promise<string> {
-    await this.Bucket.putObject({
+    const uploadOptions = {
       Bucket: this.configService.get(
         ConfigurationConstants.STORAGE_BUCKET_NAME,
       ),
       Key: key,
       ContentType: image.mimetype,
       Body: image.buffer,
-    }).promise()
+    }
 
-    return key
+    const bucketInfo = await this.Bucket.upload(uploadOptions).promise()
+    this.logger(
+      `[INFO] New image in bucket: ${bucketInfo.Bucket} with url: ${bucketInfo.Location} `,
+    )
+    return bucketInfo.Location
   }
 }

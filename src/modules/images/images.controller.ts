@@ -1,6 +1,7 @@
 import {
   Controller,
   Post,
+  Get,
   UseInterceptors,
   UploadedFile,
   Body,
@@ -17,9 +18,13 @@ import {
   ApiBody,
   ApiConsumes,
   ApiCreatedResponse,
+  ApiOkResponse,
+  ApiTags,
 } from '@nestjs/swagger'
 import { ImageResponse } from './dtos/image-response.dto'
+import { ImagesListResponse } from './dtos/images-list-response.dto'
 
+@ApiTags('Images')
 @Controller('images')
 export class ImagesController {
   constructor(private imagesService: ImagesService) {}
@@ -39,5 +44,13 @@ export class ImagesController {
     // Add information about the user
     metadata.username = req.user.username
     return this.imagesService.store(image, metadata)
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({ type: ImagesListResponse })
+  @Get()
+  async list(): Promise<ImagesListResponse> {
+    return this.imagesService.list()
   }
 }

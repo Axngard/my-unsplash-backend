@@ -7,7 +7,7 @@ export class InformativeResponseDto {
   statusCode: number
 
   @ApiProperty({
-    example: 'user_created',
+    example: 'informative_response',
   })
   message: string
 }
