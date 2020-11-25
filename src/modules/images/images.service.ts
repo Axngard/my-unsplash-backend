@@ -2,7 +2,6 @@ import debug from 'debug'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { InjectModel } from '@nestjs/mongoose'
-import { plainToClass } from 'class-transformer'
 import { S3 } from 'ibm-cos-sdk'
 import { Model } from 'mongoose'
 import { ConfigurationConstants } from '../../config/configuration-constants'
@@ -10,6 +9,8 @@ import { ImageResponse } from './dtos/image-response.dto'
 import { ImageUploadDto } from './dtos/image-upload.dto'
 import { ImageInterface } from './interfaces/image'
 import { Images, ImagesDocument } from './schemas/images.schema'
+import { ImagesListResponse } from './dtos/images-list-response.dto'
+import { plainToClass } from 'class-transformer'
 
 @Injectable()
 export class ImagesService {
@@ -54,8 +55,15 @@ export class ImagesService {
     throw new InternalServerErrorException('image_not_saved')
   }
 
-  async list() {
-    return { nada: 'dada' }
+  async list(): Promise<ImagesListResponse> {
+    const data = await this.imagesModel.find({})
+    const response: ImagesListResponse = {
+      statusCode: 200,
+      message: 'images_list',
+      data: data,
+    }
+
+    return response
   }
 
   private bootstrapBucket(): void {
