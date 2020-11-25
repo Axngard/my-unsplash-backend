@@ -40,4 +40,10 @@ export class ImagesController {
     metadata.username = req.user.username
     return this.imagesService.store(image, metadata)
   }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async list() {
+    return this.imagesService.list()
+  }
 }

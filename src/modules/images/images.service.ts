@@ -1,3 +1,4 @@
+import debug from 'debug'
 import { Injectable, InternalServerErrorException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config'
 import { InjectModel } from '@nestjs/mongoose'
@@ -13,12 +14,14 @@ import { Images, ImagesDocument } from './schemas/images.schema'
 @Injectable()
 export class ImagesService {
   private Bucket: S3
+  private logger: any
 
   constructor(
     private configService: ConfigService,
     @InjectModel(Images.name) private imagesModel: Model<ImagesDocument>,
   ) {
     this.bootstrapBucket()
+    this.logger = debug('app:images')
   }
 
   async store(
@@ -27,8 +30,9 @@ export class ImagesService {
   ): Promise<ImageResponse> {
     const generatedName = `${Date.now()}_${image.originalname}`
 
-    const databaseId = await this.imagesModel.create({
-      repositoryKey: generatedName,
+    const bucketData = await this.sendToBucket(image, generatedName)
+    const databaseData = await this.imagesModel.create({
+      url: bucketData,
       labels: metadata.labels,
       username: metadata.username,
       likes: 0,
@@ -36,19 +40,23 @@ export class ImagesService {
       createdAt: Date.now(),
     })
 
-    const bucketId = await this.sendToBucket(image, generatedName)
-
-    if (databaseId && bucketId) {
-      console.info(`New Image saved with id: ${databaseId.id}`)
+    if (databaseData && bucketData) {
+      this.logger(
+        `[${new Date()}] Image saved in DB with id: ${databaseData._id}`,
+      )
       const response = {
         statusCode: 201,
         message: 'image_created',
-        imageId: databaseId.id,
+        imageUrl: databaseData.url,
       }
       return plainToClass(ImageResponse, response)
     }
 
     throw new InternalServerErrorException('image_not_saved')
+  }
+
+  async list() {
+    return { nada: 'dada' }
   }
 
   private bootstrapBucket(): void {
@@ -69,15 +77,21 @@ export class ImagesService {
     image: ImageInterface,
     key: string,
   ): Promise<string> {
-    await this.Bucket.putObject({
+    const uploadOptions = {
       Bucket: this.configService.get(
         ConfigurationConstants.STORAGE_BUCKET_NAME,
       ),
       Key: key,
       ContentType: image.mimetype,
       Body: image.buffer,
-    }).promise()
+    }
 
-    return key
+    const bucketInfo = await this.Bucket.upload(uploadOptions).promise()
+    this.logger(
+      `[${new Date()}] New image in bucket: ${bucketInfo.Bucket} with url: ${
+        bucketInfo.Location
+      } `,
+    )
+    return bucketInfo.Location
   }
 }

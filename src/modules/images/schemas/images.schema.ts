@@ -6,7 +6,7 @@ export type ImagesDocument = Images & Document
 @Schema({ collection: 'images' })
 export class Images {
   @Prop({ required: true })
-  repositoryKey: string
+  url: string
 
   @Prop({ required: true, type: [String] })
   labels: string[]
