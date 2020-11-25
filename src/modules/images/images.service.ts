@@ -10,7 +10,6 @@ import { ImageUploadDto } from './dtos/image-upload.dto'
 import { ImageInterface } from './interfaces/image'
 import { Images, ImagesDocument } from './schemas/images.schema'
 import { ImagesListResponse } from './dtos/images-list-response.dto'
-import { plainToClass } from 'class-transformer'
 
 @Injectable()
 export class ImagesService {
