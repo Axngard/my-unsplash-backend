@@ -7,6 +7,7 @@ import {
   Body,
   UseGuards,
   Request,
+  Param,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ImageInterceptor } from './interceptors/image.interceptor'
@@ -52,5 +53,13 @@ export class ImagesController {
   @Get()
   async list(): Promise<ImagesListResponse> {
     return this.imagesService.list()
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @ApiOkResponse({ type: ImagesListResponse })
+  @Get(':username')
+  async listByUser(@Param('username') username): Promise<ImagesListResponse> {
+    return this.imagesService.list(username)
   }
 }

@@ -54,8 +54,25 @@ export class ImagesService {
     throw new InternalServerErrorException('image_not_saved')
   }
 
-  async list(): Promise<ImagesListResponse> {
-    const data = await this.imagesModel.find({})
+  async list(username?: string): Promise<ImagesListResponse> {
+    const filter = { username: null, labels: null }
+    if (username) {
+      filter.username = username
+    }
+
+    let data = null
+    if (!filter.username && filter.labels) {
+      data = await this.imagesModel.find(filter.labels)
+    }
+
+    if (!filter.labels && filter.username) {
+      data = await this.imagesModel.find({ username: filter.username })
+    }
+
+    if (!filter.username && !filter.labels) {
+      data = await this.imagesModel.find({})
+    }
+
     const response: ImagesListResponse = {
       statusCode: 200,
       message: 'images_list',
