@@ -55,7 +55,7 @@ export class ImagesService {
     throw new InternalServerErrorException('image_not_saved')
   }
 
-  async list(imagesParams ?: ImagesReadParams): Promise<ImagesListResponse> {
+  async list(imagesParams?: ImagesReadParams): Promise<ImagesListResponse> {
     const filter = { username: null, labels: null }
     if (imagesParams.username) {
       filter.username = imagesParams.username
@@ -84,7 +84,11 @@ export class ImagesService {
   }
 
   private async paginateResults(params: ImagesReadParams): Promise<Images[]> {
-    return this.imagesModel.find({}).skip(params.page > 0 ? ((params.page - 1) * params.nPerPage): 0).limit(params.nPerPage)
+    return this.imagesModel
+      .find({})
+      .sort({ createdAt: -1 })
+      .skip(params.page > 0 ? (params.page - 1) * params.nPerPage : 0)
+      .limit(params.nPerPage)
   }
 
   private bootstrapBucket(): void {
