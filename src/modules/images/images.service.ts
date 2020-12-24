@@ -10,6 +10,7 @@ import { ImageUploadDto } from './dtos/image-upload.dto'
 import { ImageInterface } from './interfaces/image'
 import { Images, ImagesDocument } from './schemas/images.schema'
 import { ImagesListResponse } from './dtos/images-list-response.dto'
+import { ImagesReadParams } from './interfaces/image-read-params'
 
 @Injectable()
 export class ImagesService {
@@ -54,8 +55,25 @@ export class ImagesService {
     throw new InternalServerErrorException('image_not_saved')
   }
 
-  async list(): Promise<ImagesListResponse> {
-    const data = await this.imagesModel.find({})
+  async list(imagesParams ?: ImagesReadParams): Promise<ImagesListResponse> {
+    const filter = { username: null, labels: null }
+    if (imagesParams.username) {
+      filter.username = imagesParams.username
+    }
+
+    let data = null
+    if (!filter.username && filter.labels) {
+      data = await this.imagesModel.find(filter.labels)
+    }
+
+    if (!filter.labels && filter.username) {
+      data = await this.imagesModel.find({ username: filter.username })
+    }
+
+    if (!filter.username && !filter.labels) {
+      data = await this.paginateResults(imagesParams)
+    }
+
     const response: ImagesListResponse = {
       statusCode: 200,
       message: 'images_list',
@@ -63,6 +81,10 @@ export class ImagesService {
     }
 
     return response
+  }
+
+  private async paginateResults(params: ImagesReadParams): Promise<Images[]> {
+    return this.imagesModel.find({}).skip(params.page > 0 ? ((params.page - 1) * params.nPerPage): 0).limit(params.nPerPage)
   }
 
   private bootstrapBucket(): void {
