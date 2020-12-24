@@ -8,7 +8,7 @@ import {
   UseGuards,
   Request,
   Param,
-  Query
+  Query,
 } from '@nestjs/common'
 import { FileInterceptor } from '@nestjs/platform-express'
 import { ImageInterceptor } from './interceptors/image.interceptor'
@@ -52,8 +52,14 @@ export class ImagesController {
   @UseGuards(JwtAuthGuard)
   @ApiOkResponse({ type: ImagesListResponse })
   @Get()
-  async list(@Query('perpage') nPerPage, @Query('page') page): Promise<ImagesListResponse> {
-    return this.imagesService.list({ nPerPage: parseInt(nPerPage), page: parseInt(page)})
+  async list(
+    @Query('perpage') nPerPage,
+    @Query('page') page,
+  ): Promise<ImagesListResponse> {
+    return this.imagesService.list({
+      nPerPage: parseInt(nPerPage),
+      page: parseInt(page),
+    })
   }
 
   @ApiBearerAuth()
