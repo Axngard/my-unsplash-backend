@@ -40,6 +40,12 @@ $ npm run test:e2e
 $ npm run test:cov
 ```
 
+## Live version
+
+Live version of the API 👉🏼 [Send me a request 😋](https://cutting-edgecoders-myunsplash.herokuapp.com)
+
+The documentation of every endpoint is [here 🎓☁](https://cutting-edgecoders-myunsplash.herokuapp.com/api)
+
 ## Contribute
 
 You can contribute to our repository, send us a DM on Twitter.
