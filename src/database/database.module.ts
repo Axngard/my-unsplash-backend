@@ -1,7 +1,7 @@
-import { Module } from '@nestjs/common';
-import { MongooseModule } from '@nestjs/mongoose';
-import { ConfigModule, ConfigService } from '@nestjs/config';
-import { ConfigurationConstants } from '../config/configuration-constants';
+import { Module } from '@nestjs/common'
+import { MongooseModule } from '@nestjs/mongoose'
+import { ConfigModule, ConfigService } from '@nestjs/config'
+import { ConfigurationConstants } from '../config/configuration-constants'
 
 @Module({
   imports: [
@@ -16,9 +16,9 @@ import { ConfigurationConstants } from '../config/configuration-constants';
           ConfigurationConstants.DB_HOST,
         )}/${configService.get(
           ConfigurationConstants.DB_NAME,
-        )}?retryWrites=true&w=majority`;
+        )}?retryWrites=true&w=majority`
 
-        return { uri, useNewUrlParser: true, useCreateIndex: true };
+        return { uri, useNewUrlParser: true, useCreateIndex: true }
       },
       inject: [ConfigService],
     }),
